@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from keras.preprocessing.sequence import TimeseriesGenerator
 from keras.models import Sequential
 from keras import optimizers
-from keras.layers import LSTM
+from keras.layers import LSTM, Dropout
 from keras.layers import Dense
 from sklearn.preprocessing import MinMaxScaler
 
@@ -26,30 +26,31 @@ t = np.linspace(0, 60, 2000)
 y0 = [10, 5]
 
 
-def dX_dt(X):
-    return np.array([a * X[0] - b * X[0] * X[1], -c * X[1] + d * b * X[0] * X[1]])
+def dX_dt(X, t=0):
+    return np.array([a * X[0] - b * X[0] * X[1], -c * X[1] + d * X[0] * X[1]])
 
 
 data = sp.integrate.odeint(dX_dt, y0, t)
 
-scaler = MinMaxScaler()
+scaler = MinMaxScaler(feature_range=(0, 1))
 data = scaler.fit_transform(data)
 
 # Use two thirds of the data as training data
 N = data.shape[0] // 3 * 2
 train_data = data[0:N, :]
 
-x_train = TimeseriesGenerator(train_data, train_data, length=8)
+x_train = TimeseriesGenerator(train_data, train_data, length=8, batch_size=128)
+
 
 # ------------------------LSTM------------------------
 model = Sequential()
 model.add(LSTM(8, input_shape=(8, 2)))
-model.add(Dense(20, activation='sigmoid'))
-model.add(Dense(2, activation='tanh'))
+model.add(Dense(20, activation='tanh'))
+model.add(Dense(2, activation='linear'))
 adam = optimizers.adam(lr=0.001)
 model.compile(adam, loss='mse')
 
-model.fit_generator(x_train, epochs=2000)
+model.fit_generator(x_train, epochs=20000 , verbose=2)
 
 # ---------------------prediction----------------------
 pred = []
