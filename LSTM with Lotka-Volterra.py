@@ -6,8 +6,7 @@ import matplotlib.pyplot as plt
 from keras.preprocessing.sequence import TimeseriesGenerator
 from keras.models import Sequential
 from keras import optimizers
-from keras.layers import LSTM, Dropout
-from keras.layers import Dense
+from keras.layers import LSTM, Dense
 from sklearn.preprocessing import MinMaxScaler
 
 # This program uses LSTM to predict the population of two species that follows Lotka-Volterra equations.
@@ -44,13 +43,13 @@ x_train = TimeseriesGenerator(train_data, train_data, length=8, batch_size=128)
 
 # ------------------------LSTM------------------------
 model = Sequential()
-model.add(LSTM(8, input_shape=(8, 2)))
-model.add(Dense(20, activation='tanh'))
+model.add(LSTM(6, input_shape=(8, 2)))
+model.add(Dense(10, activation='tanh'))
 model.add(Dense(2, activation='linear'))
 adam = optimizers.adam(lr=0.001)
 model.compile(adam, loss='mse')
 
-model.fit_generator(x_train, epochs=20000 , verbose=2)
+model.fit_generator(x_train, epochs=20000)
 
 # ---------------------prediction----------------------
 pred = []
