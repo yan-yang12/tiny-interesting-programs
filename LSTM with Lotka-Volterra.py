@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from keras.preprocessing.sequence import TimeseriesGenerator
 from keras.models import Sequential
 from keras import optimizers
-from keras.layers import LSTM, Dense
+from keras.layers import LSTM, Dense, Flatten
 from sklearn.preprocessing import MinMaxScaler
 
 # This program uses LSTM to predict the population of two species that follows Lotka-Volterra equations.
@@ -43,10 +43,12 @@ x_train = TimeseriesGenerator(train_data, train_data, length=8, batch_size=128)
 
 # ------------------------LSTM------------------------
 model = Sequential()
-model.add(LSTM(6, input_shape=(8, 2)))
-model.add(Dense(10, activation='tanh'))
+model.add(LSTM(16, input_shape=(8, 2), return_sequences=True))
+model.add(LSTM(8, return_sequences=True))
+model.add(Flatten())
+model.add(Dense(20, activation='tanh'))
 model.add(Dense(2, activation='linear'))
-adam = optimizers.adam(lr=0.001)
+adam = optimizers.adam(lr=0.0001)
 model.compile(adam, loss='mse')
 
 model.fit_generator(x_train, epochs=20000)
@@ -55,8 +57,9 @@ model.fit_generator(x_train, epochs=20000)
 pred = []
 batch = train_data[-8:, :].reshape((1, 8, 2))
 for i in range(data.shape[0] - N):
-    pred.append(model.predict(batch)[0])
-    batch = np.append(batch[:, 1:, :], [[pred[i]]], axis=1)
+    next_elt = model.predict(batch)[0]
+    pred.append(next_elt)
+    batch = np.append(batch[:, 1:, :], [[next_elt]], axis=1)
 
 pred = scaler.inverse_transform(pred)
 data = scaler.inverse_transform(data)
