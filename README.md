@@ -6,3 +6,9 @@
 
 ## LSTM with Lotka-Volterra.py
  This is a simple LSTM that predicts the populations of two species following the Lotka-Volterra equations.
+
+## Red Blood Cell CNN.py
+ The pocked Red Blood Cell count has become increasingly utilized as a simple inexpensive test of splenic function<sup>1</sup>. This program uses a CNN that automatically identifies pocked RBC with maximum precision of 95.5% and recall of 70.7%.
+ 
+ ## Sources
+ 1. Buchanan, George R., and Christine A. Holtkamp. “Pocked Erythrocyte Counts in Patients with Hereditary Spherocytosis before and after Splenectomy.” American Journal of Hematology 25, no. 3 (1987): 253–57. https://doi.org/10.1002/ajh.2830250304.
